@@ -20,7 +20,6 @@ function domLoaded() {
 	for (let button of buttons) {
 		button.addEventListener("click", function () { boardButtonClicked(button); });
 	}
-
 	// Clear the board
 	newGame();
 }
@@ -73,16 +72,74 @@ function checkForWinner() {
 
 function newGame() {
 	// TODO: Complete the function
+	const buttons = getGameBoardButtons();
+	clearTimeout(computerMoveTimeout);
+	for (let i = 0; i < 9; i++) {
+		buttons[i].innerHTML = '';
+		if (buttons[i].className != "") {
+			buttons[i].className = "";
+			buttons[i].removeAttribute('disabled');
+		}
+	}
+	playerTurn = true;
+	let turnInfo = document.getElementById('turnInfo');
+	turnInfo.innerHTML = "Your turn";
 }
 
 function boardButtonClicked(button) {
 	// TODO: Complete the function
+	if (playerTurn == true) {
+		button.innerHTML = 'X';
+		button.className = 'x';
+		button.setAttribute("disabled", true);
+		switchTurn();
+	}
 }
 
 function switchTurn() {
 	// TODO: Complete the function
+	let check = checkForWinner();
+	let turnInfo = document.getElementById('turnInfo');
+	if (check == 1) { // More Moves Left
+		playerTurn = !playerTurn;
+		if (playerTurn == true) {
+			turnInfo.innerHTML = "Your turn";
+		}
+		else {
+			turnInfo.innerHTML = "Computer's turn";
+			computerMoveTimeout = setTimeout(makeComputerMove, 1000);
+		}
+	}
+	else {
+		playerTurn = false;
+		if (check == 2) {
+			turnInfo.innerHTML = 'You win!';
+		}
+		else if (check == 3) {
+			turnInfo.innerHTML = 'Computer wins!';
+		}
+		else {
+			turnInfo.innerHTML = 'Draw game';
+		}
+	}
 }
 
 function makeComputerMove() {
 	// TODO: Complete the function
+	const buttons = getGameBoardButtons();
+	let rand;
+	let bool = true;
+	while (bool == true) {
+		rand = Math.floor(Math.random() * 9);
+		if (buttons[rand].hasAttribute("disabled")) {
+			continue
+		}
+		else {
+			buttons[rand].innerHTML = "O";
+			buttons[rand].className = "o";
+			buttons[rand].setAttribute("disabled", true)
+			bool = false;
+		}
+	}
+	switchTurn()
 }
